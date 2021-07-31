@@ -1,16 +1,21 @@
 import React from "react";
 
-export function Transfer({ transferTokens, tokenSymbol }) {
+interface Params {
+  transferTokens: (to: any, amount: any) => void;
+  tokenSymbol: string;
+}
+
+export function Transfer({ transferTokens, tokenSymbol }: Params) {
   return (
     <div>
       <h4>Transfer</h4>
       <form
-        onSubmit={(event) => {
+        onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
           // This function just calls the transferTokens callback with the
           // form's data.
           event.preventDefault();
 
-          const formData = new FormData(event.target);
+          const formData = new FormData(event.target as HTMLFormElement);
           const to = formData.get("to");
           const amount = formData.get("amount");
 

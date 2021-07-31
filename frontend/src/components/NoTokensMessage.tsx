@@ -1,6 +1,10 @@
 import React from "react";
 
-export function NoTokensMessage({ selectedAddress }) {
+interface Params {
+  selectedAddress: any;
+}
+
+export function NoTokensMessage({ selectedAddress }: Params) {
   return (
     <>
       <p>You don't have tokens to transfer</p>

@@ -1,6 +1,7 @@
 import React from "react";
+import { Params } from "./NetworkErrorMessage";
 
-export function TransactionErrorMessage({ message, dismiss }) {
+export function TransactionErrorMessage({ message, dismiss }: Params) {
   return (
     <div className="alert alert-danger" role="alert">
       Error sending transaction: {message.substring(0, 100)}

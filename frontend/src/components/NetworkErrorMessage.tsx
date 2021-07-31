@@ -1,6 +1,11 @@
 import React from "react";
 
-export function NetworkErrorMessage({ message, dismiss }) {
+export interface Params {
+  message: any;
+  dismiss: () => void;
+}
+
+export function NetworkErrorMessage({ message, dismiss }: Params) {
   return (
     <div className="alert alert-danger" role="alert">
       {message}
