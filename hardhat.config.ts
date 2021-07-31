@@ -6,5 +6,10 @@ import "@nomiclabs/hardhat-waffle";
 import "./tasks/faucet";
 
 export default {
-  solidity: "0.8.6"
+  solidity: "0.8.6",
+  networks: {
+    hardhat: {
+      chainId: 1337
+    },
+  }
 };
