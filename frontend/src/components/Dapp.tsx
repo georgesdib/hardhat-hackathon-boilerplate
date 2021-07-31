@@ -19,6 +19,8 @@ import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
 
+import { ProviderRpcError } from 'hardhat/types';
+
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
 // to use when deploying to other networks.
@@ -37,8 +39,28 @@ const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 // Note that (3) and (4) are specific of this sample application, but they show
 // you how to keep your Dapp and contract's state in sync,  and how to send a
 // transaction.
+interface IProps {
+}
+
+interface InitialState {
+  tokenData: any;
+  selectedAddress: any;
+  balance: any;
+  txBeingSent: any;
+  transactionError: any;
+  networkError: any;
+}
+
+declare let window: any;
+
 export class Dapp extends React.Component {
-  constructor(props) {
+  initialState: InitialState;
+  state: InitialState;
+  _provider: any;
+  _token: any;
+  _pollDataInterval: any;
+
+  constructor(props: IProps) {
     super(props);
 
     // We store multiple things in Dapp's state.
@@ -149,7 +171,7 @@ export class Dapp extends React.Component {
             */}
             {this.state.balance.gt(0) && (
               <Transfer
-                transferTokens={(to, amount) =>
+                transferTokens={(to: any, amount: any) =>
                   this._transferTokens(to, amount)
                 }
                 tokenSymbol={this.state.tokenData.symbol}
@@ -185,27 +207,27 @@ export class Dapp extends React.Component {
     this._initialize(selectedAddress);
 
     // We reinitialize it whenever the user changes their account.
-    window.ethereum.on("accountsChanged", ([newAddress]) => {
+    window.ethereum.on("accountsChanged", (newAddresses: any[]) => {
       this._stopPollingData();
       // `accountsChanged` event can be triggered with an undefined newAddress.
       // This happens when the user removes the Dapp from the "Connected
       // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
       // To avoid errors, we reset the dapp state 
-      if (newAddress === undefined) {
+      if (newAddresses[0] === undefined) {
         return this._resetState();
       }
       
-      this._initialize(newAddress);
+      this._initialize(newAddresses[0]);
     });
     
     // We reset the dapp state if the network is changed
-    window.ethereum.on("networkChanged", ([networkId]) => {
+    window.ethereum.on("networkChanged", (_networkIdList: any) => {
       this._stopPollingData();
       this._resetState();
     });
   }
 
-  _initialize(userAddress) {
+  _initialize(userAddress: any) {
     // This method initializes the dapp
 
     // We first store the user's address in the component's state
@@ -272,7 +294,7 @@ export class Dapp extends React.Component {
   // This method sends an ethereum transaction to transfer tokens.
   // While this action is specific to this application, it illustrates how to
   // send a transaction.
-  async _transferTokens(to, amount) {
+  async _transferTokens(to: any, amount: any) {
     // Sending a transaction is a complex operation:
     //   - The user can reject it
     //   - It can fail before reaching the ethereum network (i.e. if the user
@@ -341,9 +363,9 @@ export class Dapp extends React.Component {
 
   // This is an utility method that turns an RPC error into a human readable
   // message.
-  _getRpcErrorMessage(error) {
+  _getRpcErrorMessage(error: ProviderRpcError ) {
     if (error.data) {
-      return error.data.message;
+      return (error.data as Error).message;
     }
 
     return error.message;
